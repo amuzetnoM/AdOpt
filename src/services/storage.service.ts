@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 
 export interface ProjectParams {
   brandName: string;
@@ -101,9 +101,14 @@ export class StorageService {
   projects = signal<Project[]>([]);
   integrations = signal<Integration[]>([]);
 
-  // UI State (Moved here to allow AI Control)
+  // UI State (Moved here to allow Agent Control)
   currentView = signal<AppView>('dashboard');
   selectedProjectId = signal<string | null>(null);
+
+  // Computed for easier access
+  activeProject = computed(() => 
+    this.projects().find(p => p.id === this.selectedProjectId())
+  );
 
   constructor() {
     this.loadProjects();
@@ -176,7 +181,10 @@ export class StorageService {
   deleteProject(id: string) {
     this.projects.update(list => list.filter(p => p.id !== id));
     this.save();
+    
+    // If we deleted the currently open project, go back to dashboard
     if (this.selectedProjectId() === id) {
+      this.selectedProjectId.set(null);
       this.setView('dashboard');
     }
   }

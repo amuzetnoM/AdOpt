@@ -472,7 +472,11 @@ export class GeminiService {
           if (!safeArgs.projectId) return { error: true, message: 'Missing project ID' };
           const p = this.storage.getProject(safeArgs.projectId);
           if (!p) return { error: 'Project not found' };
-          const concepts = await this.generateIdeationConcepts(p.params, Number(safeArgs.count) || 3);
+          
+          // Use default if count is missing or 0
+          const count = Number(safeArgs.count) || 3;
+          
+          const concepts = await this.generateIdeationConcepts(p.params, count);
           this.storage.updateProject(safeArgs.projectId, { 
             ideationConcepts: concepts, 
             stage: 'ideation',

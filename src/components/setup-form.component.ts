@@ -10,63 +10,71 @@ import { ProjectParams } from '../services/storage.service';
   imports: [ReactiveFormsModule, CommonModule],
   template: `
     <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+      
+      <!-- Header -->
       @if (mode() === 'create') {
-        <div class="p-8 md:p-10 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
-          <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Campaign Strategy</h2>
-          <p class="text-slate-500 mt-2 text-lg">Define the core parameters for your new AI-driven ad campaign.</p>
+        <div class="p-6 md:p-10 border-b border-slate-100 bg-gradient-to-r from-slate-50 via-white to-white">
+          <h2 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Campaign Strategy</h2>
+          <p class="text-slate-500 mt-2 text-base md:text-lg">Define the core parameters for your new advertising campaign.</p>
         </div>
       }
 
-      <div class="p-8 md:p-10 pb-0">
-        <!-- AI Extraction Area -->
-        <div class="bg-gradient-to-br from-indigo-50 to-white rounded-2xl p-1 border border-indigo-100 shadow-sm mb-10">
-          <div class="p-6 md:p-8">
-            <div class="flex items-center gap-2 mb-4">
+      <div class="p-6 md:p-10 pb-0">
+        <!-- Smart Extraction Area -->
+        <div class="bg-indigo-50/50 rounded-2xl p-1 border border-indigo-100 shadow-sm mb-8 md:mb-10">
+          <div class="p-5 md:p-8">
+            <div class="flex items-center gap-2 mb-6">
                  <div class="p-1.5 bg-indigo-100 rounded-md">
                    <svg class="w-4 h-4 text-indigo-600" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path></svg>
                  </div>
-                 <h3 class="text-sm font-bold text-indigo-900 uppercase tracking-wider">AI Brand Extractor</h3>
+                 <h3 class="text-sm font-bold text-indigo-900 uppercase tracking-wider">Smart Brand Extractor</h3>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div class="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
               
               <!-- Option 1: Website Link -->
-              <div class="space-y-4">
-                 <h4 class="font-bold text-slate-800">Option 1: Analyze Website</h4>
-                 <p class="text-xs text-slate-500">We'll use Google Search to understand the brand.</p>
-                 <div class="flex gap-2">
+              <div class="w-full lg:w-1/2 space-y-4">
+                 <div>
+                   <h4 class="font-bold text-slate-800 text-sm">Option 1: Analyze Website</h4>
+                   <p class="text-xs text-slate-500 mt-1">We'll scan your site to understand the brand.</p>
+                 </div>
+                 <div class="flex flex-col sm:flex-row gap-3">
                     <input 
                       [formControl]="urlControl" 
                       type="url" 
                       placeholder="https://example.com" 
-                      class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 text-sm outline-none"
+                      class="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 text-sm outline-none w-full"
                     >
                     <button 
                       (click)="analyzeUrl()" 
                       [disabled]="urlControl.invalid || !urlControl.value || isAnalyzing()"
-                      class="bg-white hover:bg-slate-50 text-indigo-600 border border-indigo-200 font-semibold px-4 py-2.5 rounded-xl transition-all disabled:opacity-50 text-sm whitespace-nowrap"
+                      class="bg-white hover:bg-slate-50 text-indigo-600 border border-indigo-200 font-bold px-6 py-3 rounded-xl transition-all disabled:opacity-50 text-sm shadow-sm"
                     >
                       {{ isAnalyzing() && analyzeType() === 'url' ? 'Scanning...' : 'Scan Site' }}
                     </button>
                  </div>
               </div>
 
+              <div class="hidden lg:block w-px h-32 bg-indigo-100 self-center"></div>
+
               <!-- Option 2: File Upload -->
-              <div class="space-y-4 md:border-l md:border-indigo-100 md:pl-8">
-                  <h4 class="font-bold text-slate-800">Option 2: Upload Asset</h4>
-                  <p class="text-xs text-slate-500">Screenshot, Logo, or Brand Guide PDF.</p>
+              <div class="w-full lg:w-1/2 space-y-4">
+                  <div>
+                    <h4 class="font-bold text-slate-800 text-sm">Option 2: Upload Asset</h4>
+                    <p class="text-xs text-slate-500 mt-1">Screenshot, Logo, or Brand Guide PDF.</p>
+                  </div>
                   
                    <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/png, image/jpeg, image/webp, application/pdf" class="hidden">
                    
                    @if (!selectedFilePreview()) {
-                     <button (click)="fileInput.click()" class="w-full bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 group text-sm">
+                     <button (click)="fileInput.click()" class="w-full bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold py-3 px-4 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 group text-sm border-dashed border-2">
                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-slate-400 group-hover:text-indigo-500 transition-colors">
                          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                        </svg>
                        Select File
                      </button>
                    } @else {
-                     <div class="flex items-center gap-3 bg-white p-1.5 rounded-xl border border-indigo-100 shadow-sm">
+                     <div class="flex items-center gap-3 bg-white p-2 rounded-xl border border-indigo-100 shadow-sm">
                         <div class="h-10 w-10 rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200">
                           @if (selectedFileIsImage()) {
                             <img [src]="selectedFilePreview()" class="h-full w-full object-cover">
@@ -75,8 +83,8 @@ import { ProjectParams } from '../services/storage.service';
                           }
                         </div>
                         <div class="flex gap-2 flex-1">
-                            <button (click)="analyzeFile()" [disabled]="isAnalyzing()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs px-3 py-2 rounded-lg transition-all disabled:opacity-50">
-                                {{ isAnalyzing() && analyzeType() === 'file' ? '...' : 'Run Analysis' }}
+                            <button (click)="analyzeFile()" [disabled]="isAnalyzing()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs px-3 py-2 rounded-lg transition-all disabled:opacity-50 shadow-md shadow-indigo-200">
+                                {{ isAnalyzing() && analyzeType() === 'file' ? 'Analyzing...' : 'Run Analysis' }}
                             </button>
                             <button (click)="clearFile()" class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" /></svg>
@@ -90,7 +98,7 @@ import { ProjectParams } from '../services/storage.service';
         </div>
       </div>
 
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="p-8 md:p-10 pt-0 space-y-8">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="p-6 md:p-10 pt-0 space-y-8">
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div class="space-y-3">
@@ -115,17 +123,17 @@ import { ProjectParams } from '../services/storage.service';
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 bg-slate-50 rounded-2xl border border-slate-100">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 p-6 bg-slate-50 rounded-2xl border border-slate-100">
            <div class="space-y-3">
             <label class="text-xs font-bold text-slate-500 uppercase tracking-widest block">Brand Colors</label>
             <div class="flex items-center gap-3">
-                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 shadow-sm border border-white"></div>
-                 <input type="text" formControlName="brandColors" placeholder="e.g. #FF5733, #333333" class="flex-1 px-4 py-3 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 outline-none text-sm bg-white">
+                 <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 shadow-sm border-2 border-white ring-1 ring-slate-100 shrink-0"></div>
+                 <input type="text" formControlName="brandColors" placeholder="e.g. #FF5733, #333333" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 outline-none text-sm bg-white font-mono">
             </div>
            </div>
            <div class="space-y-3">
             <label class="text-xs font-bold text-slate-500 uppercase tracking-widest block">Visual Style</label>
-            <input type="text" formControlName="brandStyle" placeholder="e.g. Minimalist, Luxury" class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 outline-none text-sm bg-white">
+            <input type="text" formControlName="brandStyle" placeholder="e.g. Minimalist, Luxury" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 outline-none text-sm bg-white">
            </div>
         </div>
 
@@ -140,13 +148,13 @@ import { ProjectParams } from '../services/storage.service';
         </div>
 
         <div class="pt-6 border-t border-slate-100">
-          <button type="submit" [disabled]="form.invalid || isSubmitting()" class="w-full py-4.5 bg-slate-900 hover:bg-black text-white font-bold text-lg rounded-xl shadow-xl shadow-slate-300 transition-all disabled:opacity-50 disabled:shadow-none hover:-translate-y-0.5 flex items-center justify-center gap-2">
+          <button type="submit" [disabled]="form.invalid || isSubmitting()" class="w-full py-4.5 bg-slate-900 hover:bg-black text-white font-bold text-lg rounded-xl shadow-xl shadow-slate-300 transition-all disabled:opacity-50 disabled:shadow-none hover:-translate-y-0.5 flex items-center justify-center gap-3">
             @if (isSubmitting()) {
-              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg class="animate-spin -ml-1 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              <span>Saving Project...</span>
+              <span>Creating Strategy...</span>
             } @else {
               <span>{{ mode() === 'create' ? 'Create Project & Generate' : 'Save Changes' }}</span>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
