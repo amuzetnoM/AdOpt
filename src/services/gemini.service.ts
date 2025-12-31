@@ -19,7 +19,8 @@ export class GeminiService {
   private storage = inject(StorageService);
 
   constructor() {
-    this.ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY || '' });
+    const apiKey = (import.meta as any).env?.VITE_API_KEY || '';
+    this.ai = new GoogleGenAI({ apiKey });
   }
 
   // --- HELPER: ROBUST JSON PARSING ---

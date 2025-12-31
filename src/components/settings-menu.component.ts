@@ -22,7 +22,7 @@ import { ErrorHandlerService } from '../services/error-handler.service';
       </button>
 
       @if (isOpen()) {
-        <div class="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 z-50 animate-scale-in origin-top-right">
+        <div class="absolute left-0 bottom-full mb-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 z-50 animate-scale-in origin-bottom-left">
           <div class="px-4 py-3 border-b border-slate-100">
             <h3 class="text-sm font-bold text-slate-900">Data Management</h3>
           </div>
@@ -144,12 +144,12 @@ export class SettingsMenuComponent {
   async onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    
+
     if (file) {
       await this.backup.importData(file);
       this.isOpen.set(false);
     }
-    
+
     // Reset input
     input.value = '';
   }

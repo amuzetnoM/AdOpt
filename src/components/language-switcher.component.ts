@@ -20,7 +20,7 @@ import { I18nService, SUPPORTED_LOCALES, SupportedLocale } from '../services/i18
       </button>
 
       @if (isOpen) {
-        <div class="absolute right-0 mt-2 w-56 neo-raised bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl py-2 z-50 animate-scale-in origin-top-right">
+        <div class="absolute right-0 bottom-full mb-2 w-56 neo-raised bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl py-2 z-50 animate-scale-in origin-bottom-right">
           @for (locale of locales; track locale.code) {
             <button
               (click)="selectLocale(locale.code)"
