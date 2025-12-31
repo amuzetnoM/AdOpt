@@ -104,7 +104,15 @@ export class ApiClientService {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           }
 
-          const data = await response.json();
+          // Handle empty responses (e.g., 204 No Content)
+          const contentType = response.headers.get('content-type');
+          let data;
+          if (contentType && contentType.includes('application/json')) {
+            data = await response.json();
+          } else {
+            const text = await response.text();
+            data = text ? text : null;
+          }
           
           return {
             data,

@@ -235,7 +235,7 @@ export class AiAssistantComponent {
     return `
       Current App View: ${currentView}
       ${workflowContext}
-      Active Project: ${activeProject ? activeProject.name + ' (' + activeProject.stage + ')' : 'None'}
+      Active Project: ${activeProject ? activeProject.name + ' (' + activeProject.status + ')' : 'None'}
     `;
   }
 
