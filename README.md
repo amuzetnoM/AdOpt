@@ -34,7 +34,7 @@ AdOpt is built on a **Zoneless Angular** architecture for maximum performance an
     *   **Text/Logic**: `gemini-2.5-flash`
     *   **Images**: `imagen-4.0-generate-001`
 *   **State Management**: `StorageService` (Local Storage + Signals). The UI is purely a reflection of this persistent state.
-*   **Routing**: Hash-based routing (Applet compatible).
+*   **Routing**: Hash-based routing for SPA compatibility.
 
 ---
 
