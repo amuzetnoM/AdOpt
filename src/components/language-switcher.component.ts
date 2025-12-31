@@ -10,30 +10,30 @@ import { I18nService, SUPPORTED_LOCALES, SupportedLocale } from '../services/i18
     <div class="relative">
       <button 
         (click)="isOpen = !isOpen"
-        class="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition-all duration-200 text-white backdrop-blur-sm border border-white/10"
+        class="flex items-center gap-2 px-3 py-2 rounded-xl neo-raised bg-gradient-to-br from-gray-100 to-gray-200 neo-hover transition-all duration-200 text-gray-700"
       >
         <span class="text-lg">{{ i18n.currentLocaleConfig().flag }}</span>
         <span class="hidden md:inline text-sm font-medium">{{ i18n.currentLocaleConfig().nativeName }}</span>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" class="w-4 h-4">
           <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
         </svg>
       </button>
 
       @if (isOpen) {
-        <div class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 z-50 animate-scale-in origin-top-right">
+        <div class="absolute right-0 mt-2 w-56 neo-raised bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl py-2 z-50 animate-scale-in origin-top-right">
           @for (locale of locales; track locale.code) {
             <button
               (click)="selectLocale(locale.code)"
-              class="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-indigo-50 transition-colors text-left"
-              [class.bg-indigo-100]="i18n.currentLocale() === locale.code"
+              class="w-full px-4 py-2.5 flex items-center gap-3 neo-hover transition-all text-left mx-2 rounded-xl"
+              [class]="i18n.currentLocale() === locale.code ? 'neo-inset bg-indigo-50' : ''"
             >
               <span class="text-2xl">{{ locale.flag }}</span>
               <div class="flex-1">
-                <div class="text-sm font-semibold text-slate-900">{{ locale.nativeName }}</div>
-                <div class="text-xs text-slate-500">{{ locale.name }}</div>
+                <div class="text-sm font-semibold text-gray-800">{{ locale.nativeName }}</div>
+                <div class="text-xs text-gray-600">{{ locale.name }}</div>
               </div>
               @if (i18n.currentLocale() === locale.code) {
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 text-indigo-600">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" class="w-5 h-5 text-indigo-600">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
               }

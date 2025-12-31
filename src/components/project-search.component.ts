@@ -9,11 +9,11 @@ import { I18nService } from '../services/i18n.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 mb-6 space-y-4">
+    <div class="neo-raised bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-4 mb-6 space-y-4">
       <!-- Search Bar -->
       <div class="relative">
         <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-slate-400">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" class="w-5 h-5 text-gray-500">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
           </svg>
         </div>
@@ -21,14 +21,14 @@ import { I18nService } from '../services/i18n.service';
           [(ngModel)]="searchQuery"
           type="text"
           [placeholder]="i18n.t('common.search') + ' campaigns...'"
-          class="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all"
+          class="w-full pl-12 pr-4 py-3 rounded-xl neo-inset bg-white focus:neo-flat outline-none transition-all text-gray-800"
         />
         @if (searchQuery()) {
           <button
             (click)="searchQuery.set('')"
-            class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 hover:text-slate-600"
+            class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-700"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" class="w-5 h-5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -40,7 +40,7 @@ import { I18nService } from '../services/i18n.service';
         <div class="flex-1 min-w-[200px]">
           <select
             [(ngModel)]="statusFilter"
-            class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+            class="w-full px-3 py-2 rounded-xl neo-inset bg-white focus:neo-flat outline-none text-sm text-gray-700"
           >
             <option value="all">All Statuses</option>
             <option value="draft">Draft</option>
@@ -53,7 +53,7 @@ import { I18nService } from '../services/i18n.service';
         <div class="flex-1 min-w-[200px]">
           <select
             [(ngModel)]="sortBy"
-            class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+            class="w-full px-3 py-2 rounded-xl neo-inset bg-white focus:neo-flat outline-none text-sm text-gray-700"
           >
             <option value="modified">Recently Modified</option>
             <option value="created">Recently Created</option>
@@ -64,7 +64,7 @@ import { I18nService } from '../services/i18n.service';
         @if (hasActiveFilters()) {
           <button
             (click)="clearFilters()"
-            class="px-4 py-2 rounded-lg text-sm font-medium text-indigo-600 hover:bg-indigo-50 transition-colors"
+            class="px-4 py-2 rounded-xl neo-raised bg-gradient-to-br from-gray-100 to-gray-200 text-sm font-medium text-indigo-600 neo-hover transition-all active:neo-inset"
           >
             Clear Filters
           </button>
@@ -73,7 +73,7 @@ import { I18nService } from '../services/i18n.service';
 
       <!-- Results Count -->
       @if (filteredProjects().length !== totalProjects()) {
-        <div class="text-sm text-slate-600">
+        <div class="text-sm text-gray-600 font-medium">
           Showing {{ filteredProjects().length }} of {{ totalProjects() }} campaigns
         </div>
       }
