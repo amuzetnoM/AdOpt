@@ -1,9 +1,55 @@
-# AdOpt: AI-Driven Advertising Platform
+# ADOPT Studio: AI-Driven Advertising Platform
 > Legion: Ad Operators
 
-**AdOpt** is an enterprise-grade, single-page application (SPA) built with Angular v18+ (Zoneless) that leverages Google's Gemini 2.5 Flash and Imagen 4.0 models to automate the entire advertising campaign lifecycle. 
+**ADOPT Studio** is an enterprise-grade, single-page application (SPA) built with Angular v18+ (Zoneless) that leverages Google's Gemini 2.5 Flash and Imagen 4.0 models to automate the entire advertising campaign lifecycle. 
 
-From brand analysis to visual asset generation and SEO reporting, AdOpt acts as a creative agency in a box.
+From brand analysis to visual asset generation and SEO reporting, ADOPT Studio acts as a creative agency in a box.
+
+---
+
+## 📸 Screenshots
+
+### Dashboard View
+<div style="display: flex; gap: 10px;">
+  <div>
+    <p><strong>Light Mode</strong></p>
+    <img src="https://github.com/user-attachments/assets/4a2c30d3-7a72-4bba-a89c-f7e6a326aab1" alt="Dashboard Light Mode" width="400"/>
+  </div>
+  <div>
+    <p><strong>Dark Mode</strong></p>
+    <img src="https://github.com/user-attachments/assets/c958ea06-5f68-470d-8cdd-2c37ff0a6ca4" alt="Dashboard Dark Mode" width="400"/>
+  </div>
+</div>
+
+### Create Campaign
+<div style="display: flex; gap: 10px;">
+  <div>
+    <p><strong>Light Mode</strong></p>
+    <img src="https://github.com/user-attachments/assets/13816859-2c64-491e-a6b4-2c075e57b629" alt="Create Campaign Light Mode" width="400"/>
+  </div>
+  <div>
+    <p><strong>Dark Mode</strong></p>
+    <img src="https://github.com/user-attachments/assets/758c8ffa-1c47-42d9-bd4b-b9b5a1604707" alt="Create Campaign Dark Mode" width="400"/>
+  </div>
+</div>
+
+### Integration Hub
+<div style="display: flex; gap: 10px;">
+  <div>
+    <p><strong>Light Mode</strong></p>
+    <img src="https://github.com/user-attachments/assets/1a5da371-d80e-4c79-8563-4d2625e8ad6b" alt="Integration Hub Light Mode" width="400"/>
+  </div>
+  <div>
+    <p><strong>Dark Mode</strong></p>
+    <img src="https://github.com/user-attachments/assets/5377f73b-508d-4cc9-a463-a33ff38f2aec" alt="Integration Hub Dark Mode" width="400"/>
+  </div>
+</div>
+
+**Features:**
+- ✨ **Smooth Dark Mode**: Slider-based theme control with gradual transition from light to dark
+- 🎨 **Vivid Accent Colors**: Eye-catching purple/indigo accents that pop in dark mode
+- 🎯 **Neomorphic Design**: Modern, depth-focused UI with subtle shadows and gradients
+- 📱 **Responsive Layout**: Works seamlessly across desktop, tablet, and mobile devices
 
 ---
 
@@ -225,4 +271,4 @@ interface FinalAd {
 
 ---
 
-**AdOpt v2.0** - *Autonomous Advertising Operations Platform*
+**ADOPT Studio v2.0** - *Autonomous Advertising Operations Platform*
