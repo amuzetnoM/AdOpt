@@ -222,6 +222,16 @@ export class AiAssistantComponent {
   }
 
   private initSession() {
+    // Check if API key is configured
+    if (!this.geminiService.hasApiKey()) {
+      this.messages.update(m => [...m, {
+        role: 'model',
+        text: '⚠️ Gemini API Key Not Configured\n\nTo use AI features, please add your Google Gemini API key in the Integration Hub.\n\n👉 Click "Integrations" in the sidebar and set up Google Gemini AI.',
+        isError: true
+      }]);
+      return;
+    }
+    
     const context = this.getScreenContext();
     this.chatSession = this.geminiService.initChat(context);
   }
@@ -240,7 +250,22 @@ export class AiAssistantComponent {
   }
 
   async sendMessage() {
-    if (!this.userInput().trim() || !this.chatSession) return;
+    if (!this.userInput().trim()) return;
+    
+    // Check if API key is configured before allowing message
+    if (!this.geminiService.hasApiKey()) {
+      this.messages.update(m => [...m, {
+        role: 'model',
+        text: '⚠️ Please configure your Gemini API key in the Integration Hub first. Click "Integrations" in the sidebar to get started.',
+        isError: true
+      }]);
+      return;
+    }
+    
+    if (!this.chatSession) {
+      this.initSession();
+      if (!this.chatSession) return; // Still no session, exit
+    }
 
     const userText = this.userInput();
     this.userInput.set(''); 
@@ -301,13 +326,22 @@ export class AiAssistantComponent {
 
     } catch (e: any) {
       console.error('Operator Error:', e);
-      // Reset session on fatal protocol errors
-      if (e.message?.includes('ContentUnion') || e.message?.includes('Malformed')) {
-         this.messages.update(m => [...m, { role: 'model', text: 'Protocol sync error. Resetting operator context...', isError: true }]);
-         this.chatSession = null;
-         this.initSession();
+      
+      // Check for API key related errors
+      const errorMsg = e.message || '';
+      if (errorMsg.includes('API key') || errorMsg.includes('apiKey') || errorMsg.includes('401') || errorMsg.includes('403')) {
+        this.messages.update(m => [...m, { 
+          role: 'model', 
+          text: '⚠️ API Key Error\n\nThere\'s an issue with your Gemini API key. Please check your configuration in the Integration Hub.\n\n👉 Go to Integrations → Google Gemini AI to verify or update your API key.', 
+          isError: true 
+        }]);
+      } else if (e.message?.includes('ContentUnion') || e.message?.includes('Malformed')) {
+        // Reset session on fatal protocol errors
+        this.messages.update(m => [...m, { role: 'model', text: 'Protocol sync error. Resetting operator context...', isError: true }]);
+        this.chatSession = null;
+        this.initSession();
       } else {
-         this.messages.update(m => [...m, { role: 'model', text: 'System notification: ' + e.message, isError: true }]);
+        this.messages.update(m => [...m, { role: 'model', text: 'System notification: ' + e.message, isError: true }]);
       }
     } finally {
       this.isThinking.set(false);
