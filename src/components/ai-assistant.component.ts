@@ -336,20 +336,21 @@ export class AiAssistantComponent {
       
       // Check for API key related errors - look for HTTP status codes or specific error types
       const errorMsg = e.message || '';
+      const errorMsgLower = errorMsg.toLowerCase();
       const statusCode = e.status || e.statusCode || 0;
       
       // Detect API key errors by status codes (401, 403) or error messages
       if (statusCode === 401 || statusCode === 403 || 
-          errorMsg.toLowerCase().includes('api key') || 
-          errorMsg.toLowerCase().includes('apikey') || 
-          errorMsg.toLowerCase().includes('unauthorized') ||
-          errorMsg.toLowerCase().includes('forbidden')) {
+          errorMsgLower.includes('api key') || 
+          errorMsgLower.includes('apikey') || 
+          errorMsgLower.includes('unauthorized') ||
+          errorMsgLower.includes('forbidden')) {
         this.messages.update(m => [...m, { 
           role: 'model', 
           text: ERROR_MESSAGES.API_KEY_ERROR, 
           isError: true 
         }]);
-      } else if (e.message?.includes('ContentUnion') || e.message?.includes('Malformed')) {
+      } else if (errorMsg.includes('ContentUnion') || errorMsg.includes('Malformed')) {
         // Reset session on fatal protocol errors
         this.messages.update(m => [...m, { role: 'model', text: 'Protocol sync error. Resetting operator context...', isError: true }]);
         this.chatSession = null;

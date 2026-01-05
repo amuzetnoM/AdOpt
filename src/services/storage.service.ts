@@ -268,10 +268,6 @@ export class StorageService {
 
   // Ensure Gemini integration reflects actual API key state
   private syncGeminiState(integrations: Integration[]): Integration[] {
-    // Only check API key if Gemini integration exists
-    const hasGemini = integrations.some(i => i.id === 'gemini');
-    if (!hasGemini) return integrations;
-    
     const apiKey = this.getGeminiApiKey();
     return integrations.map(i => {
       if (i.id === 'gemini') {
