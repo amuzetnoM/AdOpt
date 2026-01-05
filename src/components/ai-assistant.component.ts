@@ -15,6 +15,13 @@ interface ChatMessage {
   timestamp?: number;
 }
 
+// Error message constants
+const ERROR_MESSAGES = {
+  NO_API_KEY: '⚠️ Gemini API Key Not Configured\n\nTo use AI features, please add your Google Gemini API key in the Integration Hub.\n\n👉 Click "Integrations" in the sidebar and set up Google Gemini AI.',
+  API_KEY_ERROR: '⚠️ API Key Error\n\nThere\'s an issue with your Gemini API key. Please check your configuration in the Integration Hub.\n\n👉 Go to Integrations → Google Gemini AI to verify or update your API key.',
+  GENERIC_ERROR: 'System notification: '
+} as const;
+
 @Component({
   selector: 'app-ai-assistant',
   standalone: true,
@@ -226,7 +233,7 @@ export class AiAssistantComponent {
     if (!this.geminiService.hasApiKey()) {
       this.messages.update(m => [...m, {
         role: 'model',
-        text: '⚠️ Gemini API Key Not Configured\n\nTo use AI features, please add your Google Gemini API key in the Integration Hub.\n\n👉 Click "Integrations" in the sidebar and set up Google Gemini AI.',
+        text: ERROR_MESSAGES.NO_API_KEY,
         isError: true
       }]);
       return;
@@ -256,7 +263,7 @@ export class AiAssistantComponent {
     if (!this.geminiService.hasApiKey()) {
       this.messages.update(m => [...m, {
         role: 'model',
-        text: '⚠️ Please configure your Gemini API key in the Integration Hub first. Click "Integrations" in the sidebar to get started.',
+        text: ERROR_MESSAGES.NO_API_KEY,
         isError: true
       }]);
       return;
@@ -327,12 +334,19 @@ export class AiAssistantComponent {
     } catch (e: any) {
       console.error('Operator Error:', e);
       
-      // Check for API key related errors
+      // Check for API key related errors - look for HTTP status codes or specific error types
       const errorMsg = e.message || '';
-      if (errorMsg.includes('API key') || errorMsg.includes('apiKey') || errorMsg.includes('401') || errorMsg.includes('403')) {
+      const statusCode = e.status || e.statusCode || 0;
+      
+      // Detect API key errors by status codes (401, 403) or error messages
+      if (statusCode === 401 || statusCode === 403 || 
+          errorMsg.toLowerCase().includes('api key') || 
+          errorMsg.toLowerCase().includes('apikey') || 
+          errorMsg.toLowerCase().includes('unauthorized') ||
+          errorMsg.toLowerCase().includes('forbidden')) {
         this.messages.update(m => [...m, { 
           role: 'model', 
-          text: '⚠️ API Key Error\n\nThere\'s an issue with your Gemini API key. Please check your configuration in the Integration Hub.\n\n👉 Go to Integrations → Google Gemini AI to verify or update your API key.', 
+          text: ERROR_MESSAGES.API_KEY_ERROR, 
           isError: true 
         }]);
       } else if (e.message?.includes('ContentUnion') || e.message?.includes('Malformed')) {
@@ -341,7 +355,7 @@ export class AiAssistantComponent {
         this.chatSession = null;
         this.initSession();
       } else {
-        this.messages.update(m => [...m, { role: 'model', text: 'System notification: ' + e.message, isError: true }]);
+        this.messages.update(m => [...m, { role: 'model', text: ERROR_MESSAGES.GENERIC_ERROR + e.message, isError: true }]);
       }
     } finally {
       this.isThinking.set(false);

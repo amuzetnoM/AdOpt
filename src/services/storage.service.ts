@@ -121,6 +121,7 @@ export class StorageService {
 
   getGeminiApiKey(): string {
     // First try environment variable, then localStorage
+    // Using type assertion since ImportMetaEnv is defined globally in vite-env.d.ts
     const envKey = (import.meta as any).env?.VITE_API_KEY;
     if (envKey) return envKey;
     
@@ -267,6 +268,10 @@ export class StorageService {
 
   // Ensure Gemini integration reflects actual API key state
   private syncGeminiState(integrations: Integration[]): Integration[] {
+    // Only check API key if Gemini integration exists
+    const hasGemini = integrations.some(i => i.id === 'gemini');
+    if (!hasGemini) return integrations;
+    
     const apiKey = this.getGeminiApiKey();
     return integrations.map(i => {
       if (i.id === 'gemini') {
