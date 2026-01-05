@@ -2,6 +2,7 @@ import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { StorageService, Integration, PlatformId } from '../services/storage.service';
+import { GeminiService } from '../services/gemini.service';
 
 type WizardStep = 'select' | 'configure' | 'connecting' | 'success' | 'manage';
 
@@ -61,8 +62,11 @@ type WizardStep = 'select' | 'configure' | 'connecting' | 'success' | 'manage';
                 @for (platform of availablePlatforms(); track platform.id) {
                   <div 
                     (click)="toggleSelection(platform.id)"
-                    [class]="'cursor-pointer border rounded-xl p-5 transition-all relative overflow-hidden group ' + (selectedIds().has(platform.id) ? 'border-blue-500 bg-blue-50/50 shadow-md' : 'border-gray-200 hover:border-blue-300 bg-white hover:shadow-sm')"
+                    [class]="'cursor-pointer border rounded-xl p-5 transition-all relative overflow-hidden group ' + (selectedIds().has(platform.id) ? 'border-blue-500 bg-blue-50/50 shadow-md' : 'border-gray-200 hover:border-blue-300 bg-white hover:shadow-sm') + (platform.isAiCore ? ' ring-2 ring-indigo-200' : '')"
                   >
+                    @if(platform.isAiCore) {
+                      <div class="absolute top-2 right-2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">AI Core</div>
+                    }
                     <div class="flex items-start justify-between mb-3">
                       <div [class]="'w-12 h-12 rounded-lg flex items-center justify-center bg-white shadow-sm border border-gray-100 ' + platform.color">
                         <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [innerHTML]="platform.icon"></svg>
@@ -75,6 +79,7 @@ type WizardStep = 'select' | 'configure' | 'connecting' | 'success' | 'manage';
                     <h3 class="font-bold text-gray-900 mb-1">{{ platform.name }}</h3>
                     <p class="text-xs text-gray-500 leading-relaxed">
                       @if(platform.isConnected) { <span class="text-green-600 font-medium">● Connected</span> } 
+                      @else if(platform.isAiCore) { <span class="text-indigo-600 font-medium">Required for AI features</span> }
                       @else { Connect to sync ads & insights. }
                     </p>
                   </div>
@@ -288,6 +293,7 @@ type WizardStep = 'select' | 'configure' | 'connecting' | 'success' | 'manage';
 export class IntegrationWizardComponent {
   storage = inject(StorageService);
   fb: FormBuilder = inject(FormBuilder);
+  geminiService = inject(GeminiService);
 
   currentStep = signal<WizardStep>('manage');
   selectedIds = signal<Set<PlatformId>>(new Set());
@@ -367,6 +373,11 @@ export class IntegrationWizardComponent {
         config: formVal,
         lastSync: Date.now()
       });
+
+      // If this is Gemini, reinitialize the AI service with the new key
+      if (currentId === 'gemini' && formVal.apiKey) {
+        this.geminiService.updateApiKey(formVal.apiKey);
+      }
 
       // Move next
       if (this.configIndex() < this.configQueue().length - 1) {

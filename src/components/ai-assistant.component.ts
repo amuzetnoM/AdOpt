@@ -15,6 +15,13 @@ interface ChatMessage {
   timestamp?: number;
 }
 
+// Error message constants
+const ERROR_MESSAGES = {
+  NO_API_KEY: '⚠️ Gemini API Key Not Configured\n\nTo use AI features, please add your Google Gemini API key in the Integration Hub.\n\n👉 Click "Integrations" in the sidebar and set up Google Gemini AI.',
+  API_KEY_ERROR: '⚠️ API Key Error\n\nThere\'s an issue with your Gemini API key. Please check your configuration in the Integration Hub.\n\n👉 Go to Integrations → Google Gemini AI to verify or update your API key.',
+  GENERIC_ERROR: 'System notification: '
+} as const;
+
 @Component({
   selector: 'app-ai-assistant',
   standalone: true,
@@ -222,6 +229,16 @@ export class AiAssistantComponent {
   }
 
   private initSession() {
+    // Check if API key is configured
+    if (!this.geminiService.hasApiKey()) {
+      this.messages.update(m => [...m, {
+        role: 'model',
+        text: ERROR_MESSAGES.NO_API_KEY,
+        isError: true
+      }]);
+      return;
+    }
+    
     const context = this.getScreenContext();
     this.chatSession = this.geminiService.initChat(context);
   }
@@ -240,7 +257,22 @@ export class AiAssistantComponent {
   }
 
   async sendMessage() {
-    if (!this.userInput().trim() || !this.chatSession) return;
+    if (!this.userInput().trim()) return;
+    
+    // Check if API key is configured before allowing message
+    if (!this.geminiService.hasApiKey()) {
+      this.messages.update(m => [...m, {
+        role: 'model',
+        text: ERROR_MESSAGES.NO_API_KEY,
+        isError: true
+      }]);
+      return;
+    }
+    
+    if (!this.chatSession) {
+      this.initSession();
+      if (!this.chatSession) return; // Still no session, exit
+    }
 
     const userText = this.userInput();
     this.userInput.set(''); 
@@ -301,13 +333,30 @@ export class AiAssistantComponent {
 
     } catch (e: any) {
       console.error('Operator Error:', e);
-      // Reset session on fatal protocol errors
-      if (e.message?.includes('ContentUnion') || e.message?.includes('Malformed')) {
-         this.messages.update(m => [...m, { role: 'model', text: 'Protocol sync error. Resetting operator context...', isError: true }]);
-         this.chatSession = null;
-         this.initSession();
+      
+      // Check for API key related errors - look for HTTP status codes or specific error types
+      const errorMsg = e.message || '';
+      const errorMsgLower = errorMsg.toLowerCase();
+      const statusCode = e.status || e.statusCode || 0;
+      
+      // Detect API key errors by status codes (401, 403) or error messages
+      if (statusCode === 401 || statusCode === 403 || 
+          errorMsgLower.includes('api key') || 
+          errorMsgLower.includes('apikey') || 
+          errorMsgLower.includes('unauthorized') ||
+          errorMsgLower.includes('forbidden')) {
+        this.messages.update(m => [...m, { 
+          role: 'model', 
+          text: ERROR_MESSAGES.API_KEY_ERROR, 
+          isError: true 
+        }]);
+      } else if (errorMsg.includes('ContentUnion') || errorMsg.includes('Malformed')) {
+        // Reset session on fatal protocol errors
+        this.messages.update(m => [...m, { role: 'model', text: 'Protocol sync error. Resetting operator context...', isError: true }]);
+        this.chatSession = null;
+        this.initSession();
       } else {
-         this.messages.update(m => [...m, { role: 'model', text: 'System notification: ' + e.message, isError: true }]);
+        this.messages.update(m => [...m, { role: 'model', text: ERROR_MESSAGES.GENERIC_ERROR + e.message, isError: true }]);
       }
     } finally {
       this.isThinking.set(false);

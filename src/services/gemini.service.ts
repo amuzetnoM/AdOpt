@@ -19,8 +19,18 @@ export class GeminiService {
   private storage = inject(StorageService);
 
   constructor() {
-    const apiKey = (import.meta as any).env?.VITE_API_KEY || '';
+    const apiKey = this.storage.getGeminiApiKey();
     this.ai = new GoogleGenAI({ apiKey });
+  }
+
+  // Reinitialize AI with new API key
+  updateApiKey(newKey: string) {
+    this.ai = new GoogleGenAI({ apiKey: newKey });
+  }
+
+  // Check if API key is configured
+  hasApiKey(): boolean {
+    return this.storage.hasGeminiApiKey();
   }
 
   // --- HELPER: ROBUST JSON PARSING ---

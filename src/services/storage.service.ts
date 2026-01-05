@@ -60,7 +60,7 @@ export interface Project {
   seoReport?: string; // Markdown/HTML report for the whole campaign
 }
 
-export type PlatformId = 'facebook' | 'instagram' | 'linkedin' | 'twitter' | 'tiktok' | 'google_ads' | 'youtube';
+export type PlatformId = 'gemini' | 'facebook' | 'instagram' | 'linkedin' | 'twitter' | 'tiktok' | 'google_ads' | 'youtube';
 export type AppView = 'dashboard' | 'create' | 'project' | 'integrations';
 
 export interface IntegrationField {
@@ -88,6 +88,7 @@ export interface Integration {
   lastSync?: number;
   fields: IntegrationField[];
   guide: IntegrationGuide;
+  isAiCore?: boolean; // Marks integrations that enable AI functionality
 }
 
 @Injectable({
@@ -96,6 +97,7 @@ export interface Integration {
 export class StorageService {
   private readonly STORAGE_KEY = 'adscale_projects_v2'; 
   private readonly INTEGRATION_KEY = 'adscale_integrations_v2';
+  private readonly GEMINI_KEY_STORAGE = 'adopt_gemini_api_key';
   
   // Data State
   projects = signal<Project[]>([]);
@@ -113,6 +115,25 @@ export class StorageService {
   constructor() {
     this.loadProjects();
     this.loadIntegrations();
+  }
+
+  // --- Gemini API Key Management ---
+
+  getGeminiApiKey(): string {
+    // First try environment variable, then localStorage
+    // Using type assertion since ImportMetaEnv is defined globally in vite-env.d.ts
+    const envKey = (import.meta as any).env?.VITE_API_KEY;
+    if (envKey) return envKey;
+    
+    return localStorage.getItem(this.GEMINI_KEY_STORAGE) || '';
+  }
+
+  setGeminiApiKey(key: string) {
+    localStorage.setItem(this.GEMINI_KEY_STORAGE, key);
+  }
+
+  hasGeminiApiKey(): boolean {
+    return !!this.getGeminiApiKey();
   }
 
   // --- UI Control Methods ---
@@ -236,13 +257,28 @@ export class StorageService {
           }
           return def;
         });
-        this.integrations.set(merged);
+        this.integrations.set(this.syncGeminiState(merged));
       } catch (e) {
-        this.integrations.set(defaultList);
+        this.integrations.set(this.syncGeminiState(defaultList));
       }
     } else {
-      this.integrations.set(defaultList);
+      this.integrations.set(this.syncGeminiState(defaultList));
     }
+  }
+
+  // Ensure Gemini integration reflects actual API key state
+  private syncGeminiState(integrations: Integration[]): Integration[] {
+    const apiKey = this.getGeminiApiKey();
+    return integrations.map(i => {
+      if (i.id === 'gemini') {
+        return {
+          ...i,
+          isConnected: !!apiKey,
+          config: apiKey ? { ...i.config, apiKey } : i.config
+        };
+      }
+      return i;
+    });
   }
 
   saveIntegrations() {
@@ -254,10 +290,38 @@ export class StorageService {
       list.map(i => i.id === id ? { ...i, ...updates } : i)
     );
     this.saveIntegrations();
+    
+    // If updating Gemini integration, also update the API key storage
+    if (id === 'gemini' && updates.config?.apiKey) {
+      this.setGeminiApiKey(updates.config.apiKey);
+    }
   }
 
   private getDefaultIntegrations(): Integration[] {
     return [
+      {
+        id: 'gemini',
+        name: 'Google Gemini AI',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />',
+        color: 'text-indigo-600',
+        isConnected: false,
+        config: {},
+        isAiCore: true,
+        fields: [
+          { key: 'apiKey', label: 'Gemini API Key', type: 'password', placeholder: 'AIza...', description: 'Your Google Gemini API key for AI-powered ad generation.', required: true }
+        ],
+        guide: {
+          title: 'Get Your Gemini API Key',
+          docsUrl: 'https://makersuite.google.com/app/apikey',
+          steps: [
+            'Visit Google AI Studio at makersuite.google.com/app/apikey',
+            'Sign in with your Google account',
+            'Click "Create API Key" button',
+            'Copy the generated API key',
+            'Paste it in the field above to enable AI features across AdOpt'
+          ]
+        }
+      },
       { 
         id: 'facebook', 
         name: 'Facebook Ads', 
